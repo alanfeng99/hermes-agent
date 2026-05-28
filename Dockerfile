@@ -289,3 +289,20 @@ VOLUME [ "/opt/data" ]
 # like `--version` would be intercepted by /init's POSIX shell.
 ENTRYPOINT [ "/init", "/opt/hermes/docker/main-wrapper.sh" ]
 CMD [ ]
+# ─── Hearing Action customisations (appended to upstream Hermes Dockerfile) ────
+# Keeps upstream's /init + s6-overlay supervision intact; only adds tools the
+# agent needs (mysql client + zeabur CLI via npx is already available via node)
+# and a cont-init.d script that prepares config + clones the source repo before
+# the gateway starts.
+USER root
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends default-mysql-client jq \
+    && rm -rf /var/lib/apt/lists/*
+
+# cont-init.d scripts run as root, in order, before any s6 service starts.
+# 99- prefix → runs after upstream's own init hooks.
+COPY --chmod=0755 hearing-action-init.sh /etc/cont-init.d/99-hearing-action.sh
+
+# Start the messaging gateway by default. Upstream's main-wrapper.sh routes
+# `<image> gateway start` → `hermes gateway start` as the supervised user.
+CMD [ "gateway", "start" ]
