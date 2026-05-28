@@ -304,5 +304,5 @@ RUN apt-get update \
 COPY --chmod=0755 hearing-action-init.sh /etc/cont-init.d/99-hearing-action.sh
 
 # Start the messaging gateway by default. Upstream's main-wrapper.sh routes
-# `<image> gateway start` → `hermes gateway start` as the supervised user.
+# `<image> gateway start` → `hermes gateway run` as the supervised user.
 CMD [ "sh", "-c", "set -x; { hermes gateway start; rc=$?; echo \"[gateway exited rc=$rc; container kept alive]\"; } 2>&1 | tee /tmp/hermes-gw.log; exec tail -f /dev/null" ]
