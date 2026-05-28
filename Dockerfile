@@ -305,4 +305,4 @@ COPY --chmod=0755 hearing-action-init.sh /etc/cont-init.d/99-hearing-action.sh
 
 # Start the messaging gateway by default. Upstream's main-wrapper.sh routes
 # `<image> gateway start` → `hermes gateway start` as the supervised user.
-CMD [ "sh", "-c", "set -x; mkdir -p /opt/data && hermes gateway start 2>&1 | tee /opt/data/hermes-gw.log; rc=${PIPESTATUS[0]:-$?}; echo \"[gateway exited rc=$rc; keeping container alive for inspection]\" | tee -a /opt/data/hermes-gw.log; exec tail -f /dev/null" ]
+CMD [ "sh", "-c", "set -x; { hermes gateway start; rc=$?; echo \"[gateway exited rc=$rc; container kept alive]\"; } 2>&1 | tee /tmp/hermes-gw.log; exec tail -f /dev/null" ]
