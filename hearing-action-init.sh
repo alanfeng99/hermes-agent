@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/command/with-contenv bash
 # Runs once at container start (via s6-overlay /etc/cont-init.d) as root,
 # BEFORE `hermes gateway run` is supervised. Prepares the agent's persistent
 # workspace under /opt/data and starts a Caddy reverse-proxy on $PORT that
