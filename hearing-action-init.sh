@@ -48,6 +48,10 @@ if [ -d "$WORKSPACE" ] && [ -f /opt/hermes/hermes-context.md ]; then
   install -m 0644 -o "${HERMES_UID:-10000}" -g "${HERMES_GID:-10000}" \
     /opt/hermes/hermes-context.md "${HERMES_DATA}/AGENTS.md"
 fi
+# Trust workspace dir for any user — repo is hermes-owned but root exec contexts
+# also need to git-inspect it (cont-init runs as root) without dubious-ownership warns.
+git config --system --add safe.directory "$WORKSPACE" 2>/dev/null || true
+
 chown -R "${HERMES_UID:-10000}:${HERMES_GID:-10000}" "$HERMES_DATA"
 
 # ── 3. Caddy reverse proxy w/ basic auth in front of Hermes dashboard.
