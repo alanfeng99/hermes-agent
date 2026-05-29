@@ -44,7 +44,9 @@ echo "${WORKSPACE}" > "${HERMES_DATA}/.workspace_path"
 # self-discovers tools via this file, so the user does not have to re-explain.
 if [ -d "$WORKSPACE" ] && [ -f /opt/hermes/hermes-context.md ]; then
   install -m 0644 -o "${HERMES_UID:-10000}" -g "${HERMES_GID:-10000}" \
-    /opt/hermes/hermes-context.md "${WORKSPACE}/.hermes-context.md"
+    /opt/hermes/hermes-context.md "${WORKSPACE}/AGENTS.md"
+  install -m 0644 -o "${HERMES_UID:-10000}" -g "${HERMES_GID:-10000}" \
+    /opt/hermes/hermes-context.md "${HERMES_DATA}/AGENTS.md"
 fi
 chown -R "${HERMES_UID:-10000}:${HERMES_GID:-10000}" "$HERMES_DATA"
 
