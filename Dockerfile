@@ -301,6 +301,7 @@ RUN apt-get update \
 
 # cont-init.d scripts run as root, in order, before any s6 service starts.
 # 99- prefix → runs after upstream's own init hooks.
+COPY --chown=hermes:hermes hermes-context.md /opt/hermes/hermes-context.md
 COPY --chmod=0755 hearing-action-init.sh /etc/cont-init.d/99-hearing-action.sh
 
 # Start the messaging gateway by default. Upstream's main-wrapper.sh routes

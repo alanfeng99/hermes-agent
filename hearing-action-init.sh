@@ -39,6 +39,13 @@ else
 fi
 
 echo "${WORKSPACE}" > "${HERMES_DATA}/.workspace_path"
+
+# Always-fresh ops cheat sheet (DB + Zeabur log access patterns). The agent
+# self-discovers tools via this file, so the user does not have to re-explain.
+if [ -d "$WORKSPACE" ] && [ -f /opt/hermes/hermes-context.md ]; then
+  install -m 0644 -o "${HERMES_UID:-10000}" -g "${HERMES_GID:-10000}" \
+    /opt/hermes/hermes-context.md "${WORKSPACE}/.hermes-context.md"
+fi
 chown -R "${HERMES_UID:-10000}:${HERMES_GID:-10000}" "$HERMES_DATA"
 
 # ── 3. Caddy reverse proxy w/ basic auth in front of Hermes dashboard.
