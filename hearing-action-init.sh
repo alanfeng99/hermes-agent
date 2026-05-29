@@ -67,7 +67,9 @@ cat > /etc/caddy/Caddyfile <<CADDY
         basicauth {
             ${DASHBOARD_USER} ${DASHBOARD_PASS_BCRYPT}
         }
-        reverse_proxy 127.0.0.1:9119
+        reverse_proxy 127.0.0.1:9119 {
+            header_up Host 127.0.0.1:9119
+        }
     }
 }
 CADDY
