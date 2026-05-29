@@ -296,7 +296,7 @@ CMD [ ]
 # the gateway starts.
 USER root
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends default-mysql-client jq \
+    && apt-get install -y --no-install-recommends default-mysql-client jq caddy \
     && rm -rf /var/lib/apt/lists/*
 
 # cont-init.d scripts run as root, in order, before any s6 service starts.
