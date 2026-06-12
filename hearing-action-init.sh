@@ -2,20 +2,25 @@
 # Runs once at container start (via s6-overlay /etc/cont-init.d) as root,
 # BEFORE `hermes gateway run` is supervised. Prepares the agent's persistent
 # workspace under /opt/data and starts a Caddy reverse-proxy on $PORT that
-# fronts the Hermes dashboard (bound to 127.0.0.1:9119) with HTTP basic auth.
-# /health on the public port returns OK without auth so Zeabur's port
-# health-check passes.
+# fronts the Hermes dashboard (s6 `dashboard` service on 0.0.0.0:9119, per
+# HERMES_DASHBOARD_HOST/_PORT) with HTTP basic auth. Since v0.16.0 the
+# dashboard refuses non-loopback binds unless an auth provider is configured
+# or HERMES_DASHBOARD_INSECURE=true is set — we set the latter because Caddy
+# is the auth gate. /health on the public port returns OK without auth so
+# Zeabur's port health-check passes.
 set -euo pipefail
 
 HERMES_DATA=/opt/data
 WORKSPACE="${HERMES_DATA}/workspace/hearing-action"
-CONFIG_DIR="${HERMES_DATA}/.hermes"
 
-mkdir -p "$CONFIG_DIR" "${HERMES_DATA}/workspace"
+mkdir -p "${HERMES_DATA}/workspace"
 
 # ── 1. Default LLM model
-if [ ! -f "${CONFIG_DIR}/config.yaml" ]; then
-  cat > "${CONFIG_DIR}/config.yaml" <<YAML
+# Hermes resolves config at $HERMES_HOME/config.yaml (= /opt/data/config.yaml
+# in the container) — NOT /opt/data/.hermes/config.yaml. Seed only when
+# missing so the persistent-volume copy is never clobbered.
+if [ ! -f "${HERMES_DATA}/config.yaml" ]; then
+  cat > "${HERMES_DATA}/config.yaml" <<YAML
 model:
   default: ${HERMES_DEFAULT_MODEL:-minimax/MiniMax-M2.7}
 YAML
