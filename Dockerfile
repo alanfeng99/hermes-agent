@@ -330,9 +330,15 @@ CMD [ ]
 # and a cont-init.d script that prepares config + clones the source repo before
 # the gateway starts.
 USER root
+# The chmods restore exec bits that Zeabur's direct-upload unzip strips from
+# the build context: upstream relies on context modes for docker/*.sh (incl.
+# main-wrapper.sh, the ENTRYPOINT target — 'Permission denied' there
+# crash-loops the container) and the s6-rc.d run/finish scripts.
 RUN apt-get update \
     && apt-get install -y --no-install-recommends default-mysql-client jq caddy \
-    && rm -rf /var/lib/apt/lists/*
+    && rm -rf /var/lib/apt/lists/* \
+    && chmod 0755 /opt/hermes/docker/*.sh \
+    && find /etc/s6-overlay/s6-rc.d -type f \( -name run -o -name finish \) -exec chmod 0755 {} +
 
 # cont-init.d scripts run as root, in order, before any s6 service starts.
 # 99- prefix → runs after upstream's own init hooks.
